@@ -111,11 +111,11 @@ sequenceDiagram
 autonumber
 actor U as Usuario
 participant H as index.html
-participant F as Flask route index()
+participant F as Flask index route
 participant I as Imagen
 participant D1 as FiltroBlancoNegro
 participant D2 as FiltroBrillo
-participant FM as FormatoPNG/FormatoJPG
+participant FM as FormatoSalida
 
 U->>H: Selecciona archivo y filtros
 H->>F: POST / (multipart/form-data)
@@ -127,13 +127,13 @@ F->>D2: Envolver resultado si incluye brillo
 F->>D2: renderizar()
 D2->>D1: renderizar()
 D1->>I: renderizar()
-I-->>D1: PIL.Image copia
-D1-->>D2: PIL.Image en gris
-D2-->>F: PIL.Image final
+I-->>D1: imagen copia
+D1-->>D2: imagen en gris
+D2-->>F: imagen final
 F->>I: exportar_web(resultado_pil)
 I->>FM: procesar(resultado_pil)
-FM-->>I: data:image/...;base64,...
-I-->>F: imagen_b64
+FM-->>I: data_url_base64
+I-->>F: resultado_base64
 F-->>H: render_template(imagen_b64)
 H-->>U: Resultado + boton descargar
 ```
