@@ -1,4 +1,4 @@
-# Documentacion del proyecto
+# Documentacion Detallada del Codigo
 
 ## 1. Objetivo de este documento
 Este archivo explica el proyecto en modo lectura de codigo: que hace cada seccion, como fluye la informacion y como se conectan las clases entre si.
@@ -102,40 +102,6 @@ FiltroDecorador <|-- FiltroSepia : hereda
 
 Imagen o-- InterfaceFormato : Bridge
 FiltroDecorador o-- ImagenComponente : Decorator
-```
-
-### UML de secuencia (flujo de ejecucion)
-
-```mermaid
-sequenceDiagram
-autonumber
-actor U as Usuario
-participant H as index.html
-participant F as Flask index route
-participant I as Imagen
-participant D1 as FiltroBlancoNegro
-participant D2 as FiltroBrillo
-participant FM as FormatoSalida
-
-U->>H: Selecciona archivo y filtros
-H->>F: POST / (multipart/form-data)
-F->>F: Guardar archivo y abrir con PIL
-F->>F: Elegir formato por extension
-F->>I: Crear Imagen(imagen_pil, formato)
-F->>D1: Envolver imagen si incluye bn
-F->>D2: Envolver resultado si incluye brillo
-F->>D2: renderizar()
-D2->>D1: renderizar()
-D1->>I: renderizar()
-I-->>D1: imagen copia
-D1-->>D2: imagen en gris
-D2-->>F: imagen final
-F->>I: exportar_web(resultado_pil)
-I->>FM: procesar(resultado_pil)
-FM-->>I: data_url_base64
-I-->>F: resultado_base64
-F-->>H: render_template(imagen_b64)
-H-->>U: Resultado + boton descargar
 ```
 
 ### Como leer estos diagramas
@@ -597,7 +563,8 @@ Esta seccion resume que pasa cuando usas la interfaz (subir imagen, elegir filtr
 
 ### 13.1 Imagen de entrada: escena con color alto
 
-![Imagen de entrada colorida](static/uploads/saturaado.jpg)
+
+<img width="715" height="1248" alt="1" src="https://github.com/user-attachments/assets/b7e04d59-0349-445d-9a2c-a56e9644f8e9" />
 
 Que pasa aqui:
 1. Esta imagen representa el estado base sin filtro.
@@ -606,7 +573,8 @@ Que pasa aqui:
 
 ### 13.2 Imagen de entrada: arquitectura con alto contraste
 
-![Imagen de entrada de arquitectura](static/uploads/detallado.jpg)
+<img width="715" height="1248" alt="2" src="https://github.com/user-attachments/assets/c3ee423e-7121-4438-8735-9f9d6a189489" />
+
 
 Que pasa aqui:
 1. Esta imagen sirve para observar bien el filtro de brillo.
@@ -615,14 +583,26 @@ Que pasa aqui:
 
 ### 13.3 Imagen de entrada: fondo claro y objeto principal
 
-![Imagen de entrada de auto](static/uploads/simple.jpg)
+<img width="715" height="1248" alt="3" src="https://github.com/user-attachments/assets/51d6d36e-985a-4519-8ec5-01ab11cca817" />
+<img width="715" height="1248" alt="4" src="https://github.com/user-attachments/assets/a0ab0269-9180-4a28-9e47-d25b79bd2a6b" />
+
 
 Que pasa aqui:
 1. Esta imagen permite ver claramente los cambios de tono.
 2. Si se marca sepia, el flujo convierte primero a gris y luego coloriza con tonos marron.
 3. Si se marca blanco y negro, la salida elimina color y conserva luminancia.
 
-### 13.4 Explicacion de lo que se ve en tus capturas
+### 13.4 Descarga de imagen
+
+Imagen de referencia del resultado listo para descarga:
+<img width="1407" height="1413" alt="5" src="https://github.com/user-attachments/assets/a042f244-82db-45f6-a2bf-f89536f3f51d" />
+
+Que pasa en este estado:
+1. La imagen ya fue procesada por la cadena de filtros seleccionada.
+2. Debajo del resultado aparece el boton con el texto Descargar Imagen.
+3. Al hacer clic, el navegador descarga el archivo generado con nombre imagen_editada_{nombre_archivo}.
+
+### 13.5 Explicacion de lo que se ve en tus capturas
 
 En tus capturas del navegador se aprecia exactamente este ciclo de ejecucion:
 1. El usuario tiene una imagen activa (se muestra en la tarjeta Editando actualmente).
@@ -631,7 +611,7 @@ En tus capturas del navegador se aprecia exactamente este ciclo de ejecucion:
 4. Se recalcula la imagen final y se vuelve a pintar en Resultado Final.
 5. El boton Descargar Imagen usa la misma salida base64 que se muestra en pantalla.
 
-### 13.5 Mapa rapido de filtro -> efecto visual
+### 13.6 Mapa rapido de filtro -> efecto visual
 
 1. Blanco y Negro: elimina crominancia, conserva estructura de luces y sombras.
 2. Brillo (+50%): incrementa intensidad de luminosidad global.
