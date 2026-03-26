@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Editor de Imágenes (Bridge + Decorator)</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f0f2f5; }
+        .contenedor { max-width: 700px; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); margin: auto; }
+        h2 { color: #333; text-align: center; }
+        .seccion { margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
+        .resultado { margin-top: 25px; text-align: center; }
+        .resultado img { max-width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); }
+        .error { color: #d32f2f; font-weight: bold; text-align: center; }
+        button { background-color: #007bff; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; }
+        button:hover { background-color: #0056b3; }
+        label { cursor: pointer; }
+    </style>
+</head>
+
+<body>
+    <div class="contenedor">
+        <h2>Simulador de Editor Gráfico en Vivo</h2>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data">
+        
+            {% if nombre_archivo %}
+                <div class="seccion" style="background-color: #e8f5e9; border-color: #c8e6c9;">
+                    <p>✅ Trabajando con: <b>{{ nombre_archivo }}</b></p>
+                    <p><small>Sube un archivo nuevo si quieres cambiar de foto.</small></p>
+                    <input type="hidden" name="nombre_archivo_oculto" value="{{ nombre_archivo }}">
+                </div>
+            {% endif %}
+
+            <div class="seccion">
+                <label><b>1. Sube tu foto (.jpg o .png):</b></label><br><br>
+                <input type="file" name="archivo" accept=".jpg, .jpeg, .png">
+            </div>
+            
+            <div class="seccion">
+                <label><b>2. Añade filtros (se aplican en orden):</b></label><br><br>
+                <input type="checkbox" name="filtros" value="bn" id="bn">
+                <label for="bn">Blanco y Negro</label><br>
+                
+                <input type="checkbox" name="filtros" value="brillo" id="brillo">
+                <label for="brillo">Aumentar Brillo (+50%)</label><br>
+                
+                <input type="checkbox" name="filtros" value="sepia" id="sepia">
+                <label for="sepia">Filtro Sepia</label><br>
+            </div>
+            
+            <button type="submit">Procesar y Ver Imagen</button>
+        </form>
+
+        {% if imagen_b64 %}
+            <div class="resultado">
+                <h3>Resultado:</h3>
+                <img src="{{ imagen_b64 }}" alt="Imagen editada">
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
