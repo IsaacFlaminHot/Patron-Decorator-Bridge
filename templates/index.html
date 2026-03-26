@@ -1,67 +1,101 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
-    <title>Editor de Imágenes (Bridge + Decorator)</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f0f2f5; }
-        .contenedor { max-width: 700px; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); margin: auto; }
-        h2 { color: #333; text-align: center; }
-        .seccion { margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
-        .resultado { margin-top: 25px; text-align: center; }
-        .resultado img { max-width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); }
-        .error { color: #d32f2f; font-weight: bold; text-align: center; }
-        button { background-color: #007bff; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; }
-        button:hover { background-color: #0056b3; }
-        label { cursor: pointer; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor de Imágenes Gráfico</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
 </head>
+<body class="bg-slate-50 font-sans text-slate-800 antialiased min-h-screen py-12 px-4 sm:px-6 lg:px-8">
 
-<body>
-    <div class="contenedor">
-        <h2>Simulador de Editor Gráfico en Vivo</h2>
+    <div class="max-w-2xl mx-auto bg-white p-8 sm:p-10 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-slate-100">
+        
+        <h2 class="text-2xl font-semibold text-center text-slate-900 tracking-tight mb-8">
+            Editor Gráfico
+        </h2>
 
         {% if error %}
-            <p class="error">{{ error }}</p>
+            <div class="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-xl mb-6 text-sm flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
+                {{ error }}
+            </div>
         {% endif %}
 
-        <form method="POST" enctype="multipart/form-data">
+        <form method="POST" enctype="multipart/form-data" class="space-y-8">
         
             {% if nombre_archivo %}
-                <div class="seccion" style="background-color: #e8f5e9; border-color: #c8e6c9;">
-                    <p>✅ Trabajando con: <b>{{ nombre_archivo }}</b></p>
-                    <p><small>Sube un archivo nuevo si quieres cambiar de foto.</small></p>
+                <div class="bg-slate-50 border border-slate-200 px-5 py-4 rounded-xl flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-slate-500">Editando actualmente:</p>
+                        <p class="font-medium text-slate-900">{{ nombre_archivo }}</p>
+                    </div>
+                    <span class="bg-emerald-100 text-emerald-700 text-xs px-2 py-1 rounded-full font-medium">Activo</span>
                     <input type="hidden" name="nombre_archivo_oculto" value="{{ nombre_archivo }}">
                 </div>
             {% endif %}
 
-            <div class="seccion">
-                <label><b>1. Sube tu foto (.jpg o .png):</b></label><br><br>
-                <input type="file" name="archivo" accept=".jpg, .jpeg, .png">
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">1. Seleccionar nueva imagen (Opcional si ya hay una)</label>
+                <div class="mt-1 flex justify-center px-6 py-5 border-2 border-slate-200 border-dashed rounded-xl hover:border-slate-300 transition-colors">
+                    <div class="space-y-1 text-center">
+                        <svg class="mx-auto h-12 w-12 text-slate-300" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <div class="flex text-sm text-slate-600 justify-center">
+                            <label for="archivo" class="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none">
+                                <span>Sube un archivo</span>
+                                <input id="archivo" name="archivo" type="file" class="sr-only" accept=".jpg, .jpeg, .png">
+                            </label>
+                        </div>
+                        <p class="text-xs text-slate-500">PNG o JPG hasta 16MB</p>
+                    </div>
+                </div>
             </div>
             
-            <div class="seccion">
-                <label><b>2. Añade filtros (se aplican en orden):</b></label><br><br>
-                <input type="checkbox" name="filtros" value="bn" id="bn">
-                <label for="bn">Blanco y Negro</label><br>
-                
-                <input type="checkbox" name="filtros" value="brillo" id="brillo">
-                <label for="brillo">Aumentar Brillo (+50%)</label><br>
-                
-                <input type="checkbox" name="filtros" value="sepia" id="sepia">
-                <label for="sepia">Filtro Sepia</label><br>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-3">2. Aplicar Filtros</label>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    
+                    <label class="relative flex items-center justify-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
+                        <input type="checkbox" name="filtros" value="bn" class="absolute left-4 w-4 h-4 text-slate-900 border-slate-300 rounded focus:ring-slate-900">
+                        <span class="ml-6 text-sm font-medium text-slate-700">Blanco y Negro</span>
+                    </label>
+                    
+                    <label class="relative flex items-center justify-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
+                        <input type="checkbox" name="filtros" value="brillo" class="absolute left-4 w-4 h-4 text-slate-900 border-slate-300 rounded focus:ring-slate-900">
+                        <span class="ml-6 text-sm font-medium text-slate-700">Brillo (+50%)</span>
+                    </label>
+                    
+                    <label class="relative flex items-center justify-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
+                        <input type="checkbox" name="filtros" value="sepia" class="absolute left-4 w-4 h-4 text-slate-900 border-slate-300 rounded focus:ring-slate-900">
+                        <span class="ml-6 text-sm font-medium text-slate-700">Efecto Sepia</span>
+                    </label>
+
+                </div>
             </div>
             
-            <button type="submit">Procesar y Ver Imagen</button>
+            <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-slate-900 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-colors">
+                Procesar Imagen
+            </button>
         </form>
 
         {% if imagen_b64 %}
-            <div class="resultado">
-                <h3>Resultado:</h3>
-                <img src="{{ imagen_b64 }}" alt="Imagen editada">
+            <div class="mt-10 pt-8 border-t border-slate-100">
+                <h3 class="text-sm font-medium text-slate-700 text-center mb-4">Resultado Final</h3>
+                <div class="rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-slate-50">
+                    <img src="{{ imagen_b64 }}" alt="Imagen editada" class="w-full h-auto object-contain">
+                </div>
+                
+                <div class="mt-6 flex justify-center">
+                    <a href="{{ imagen_b64 }}" download="imagen_editada_{{ nombre_archivo }}" class="inline-flex items-center px-4 py-2 border border-slate-300 shadow-sm text-sm font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-colors">
+                        <svg class="mr-2 h-4 w-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Descargar Imagen
+                    </a>
+                </div>
             </div>
         {% endif %}
+        
     </div>
 </body>
 </html>
