@@ -37,8 +37,9 @@
 
             <div>
                 <label class="block text-sm font-medium text-slate-700 mb-2">1. Seleccionar nueva imagen (Opcional si ya hay una)</label>
-                <div class="mt-1 flex justify-center px-6 py-5 border-2 border-slate-200 border-dashed rounded-xl hover:border-slate-300 transition-colors">
-                    <div class="space-y-1 text-center">
+                <div class="mt-1 flex flex-col justify-center px-6 py-5 border-2 border-slate-200 border-dashed rounded-xl hover:border-slate-300 transition-colors">
+                    
+                    <div id="area-subida" class="space-y-1 text-center block">
                         <svg class="mx-auto h-12 w-12 text-slate-300" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
                             <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
@@ -50,6 +51,15 @@
                         </div>
                         <p class="text-xs text-slate-500">PNG o JPG hasta 16MB</p>
                     </div>
+
+                    <div id="contenedor-preview" class="hidden flex flex-col items-center mt-4">
+                        <p class="text-sm text-slate-500 mb-2">Vista previa de tu imagen:</p>
+                        <img id="imagen-preview" src="" alt="Vista previa" class="max-h-64 object-contain rounded-lg border border-slate-200 shadow-sm mb-3">
+                        <button type="button" id="btn-quitar" class="text-xs font-medium text-red-600 hover:text-red-800 transition-colors bg-red-50 px-3 py-1.5 rounded-md border border-red-100">
+                            Quitar imagen
+                        </button>
+                    </div>
+
                 </div>
             </div>
             
@@ -97,5 +107,47 @@
         {% endif %}
         
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputArchivo = document.getElementById('archivo');
+            const areaSubida = document.getElementById('area-subida');
+            const contenedorPreview = document.getElementById('contenedor-preview');
+            const imagenPreview = document.getElementById('imagen-preview');
+            const btnQuitar = document.getElementById('btn-quitar');
+
+            // Escuchar cuando el usuario seleccione un archivo
+            inputArchivo.addEventListener('change', function(e) {
+                const archivo = e.target.files[0];
+                
+                if (archivo) {
+                    // Usar FileReader para leer la imagen y mostrarla
+                    const lector = new FileReader();
+                    
+                    lector.onload = function(e) {
+                        imagenPreview.src = e.target.result;
+                        // Ocultar el icono de subida y mostrar la vista previa
+                        areaSubida.classList.add('hidden');
+                        areaSubida.classList.remove('block');
+                        contenedorPreview.classList.remove('hidden');
+                    }
+                    
+                    lector.readAsDataURL(archivo);
+                }
+            });
+
+            // Lógica para quitar la imagen seleccionada
+            btnQuitar.addEventListener('click', function() {
+                // Limpiar el input file
+                inputArchivo.value = '';
+                imagenPreview.src = '';
+                
+                // Volver a mostrar el área de subida original
+                contenedorPreview.classList.add('hidden');
+                areaSubida.classList.remove('hidden');
+                areaSubida.classList.add('block');
+            });
+        });
+    </script>
 </body>
 </html>

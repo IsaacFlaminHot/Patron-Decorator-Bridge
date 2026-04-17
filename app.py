@@ -19,6 +19,8 @@ class InterfaceFormato(ABC):
         """Debe recibir un objeto PIL y devolver un string Base64 """
         pass
 
+# Implementaciones concretas del formato (Patron Bridge)
+# =========================================================
 class FormatoJPG(InterfaceFormato):
     def procesar(self, imagen_pil) -> str:
         if imagen_pil.mode in ("RGBA", "P"):
@@ -123,7 +125,7 @@ def index():
             else:
                 return render_template('index.html', error="Por favor, sube una imagen.")
 
-            # --- LA LÓGICA DE TUS PATRONES SIGUE INTACTA ---
+            # --- LA LÓGICA SIGUE INTACTA ---
             extension = nombre_archivo.lower().split('.')[-1]
 
             if extension in ["jpg", "jpeg"]:
@@ -156,5 +158,5 @@ def index():
                            error=error)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True,)
     
